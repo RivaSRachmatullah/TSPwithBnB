@@ -1,28 +1,33 @@
 package Data_Model;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
 public class Graph {
-    private Node[] NodesinGraph;
-    public static void main(String args[]) {
-        Graph G = new Graph();
-        String path = "graph2.in";
-        G.ReadGraphFromFile(path);
-        G.PrintGraph();
+    private int NNode;
+    private Double[][] GraphMatrix;
+    
+    public int GetNNode() {
+        return NNode;
     }
-    public void ReadGraphFromFile(String FilePath) {
+    
+    public Double[][] GetGraphMatrix() {
+        return GraphMatrix;
+    }
+    
+    public void ReadGraphFromFile(File FilePath) throws NumberFormatException {
         try {
-            NodesinGraph = new Node[CountNumberofLineinFile(FilePath)];
+            NNode = CountNumberofLineinFile(FilePath);
+            GraphMatrix = new Double[NNode][NNode];
             FileReader filein = new FileReader(FilePath);
             BufferedReader fileinput = new BufferedReader(filein);
             String line;
             int i = 0;
             while ((line = fileinput.readLine()) != null) {
-                NodesinGraph[i] = new Node();
-                NodesinGraph[i].SetAllEdgeCorrespondtoNode(SplitandParsetoInt(line));
+                GraphMatrix[i] = SplitandParsetoInt(line);
                 i++;
             }
         } catch (FileNotFoundException ex) {
@@ -31,18 +36,8 @@ public class Graph {
             System.out.println("IOException");
         }
     }
-    public void PrintGraph() {
-        int i = 0;
-        for (Node NodeinGraph : NodesinGraph) {
-            System.out.println("Node " + (i));
-            for (Edge EdgeinANode : NodeinGraph.GetEdgeofNode()) {
-                System.out.println(EdgeinANode.GetGoal() + " " + 
-                        EdgeinANode.GetWeight());
-            }
-            i++;
-        }
-    }
-    private int CountNumberofLineinFile(String FilePath) throws IOException {
+    
+    private int CountNumberofLineinFile(File FilePath) throws IOException {
         FileReader filein = new FileReader(FilePath);
         BufferedReader fileinput = new BufferedReader(filein);
         int i = 0;
@@ -51,14 +46,18 @@ public class Graph {
         }
         return i;
     }
-    private int[] SplitandParsetoInt(String Line) {
+    
+    private Double[] SplitandParsetoInt(String Line) {
         String[] PerLine = Line.split(" ");
-        int[] IntegeronLine = new int[PerLine.length];
+        Double[] Weights = new Double[PerLine.length];
         int i = 0;
         while (i < PerLine.length) {
-            IntegeronLine[i] = Integer.parseInt(PerLine[i]);
+            Weights[i] = Double.parseDouble(PerLine[i]);
+            if (Weights[i] == 0) {
+                Weights[i] = Double.POSITIVE_INFINITY;
+            }
             i++;
         }
-        return IntegeronLine;
+        return Weights;
     }
 }
